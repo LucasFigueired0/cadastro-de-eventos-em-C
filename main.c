@@ -7,7 +7,9 @@ int opcao();
 //, int t, int *dia, int *mes, int *ano, int data_atual
 void cadastroEvento(char **nome, int *qtd_pessoas,int t);
 void exibir_eventos(char **nome,int *qtd, int t);
-void dataAtual();
+int dataAtual();
+int extrairNumero(char *valor);
+int inverteData(char *num1);
 
 int main(int argc, char *argv[]) 
 {
@@ -15,20 +17,20 @@ int main(int argc, char *argv[])
 	int *qtd_pessoas;
 	char **nome_evento;
 	char **nome_pessoas;
-	
+	int data;
 	//variáveis de data
 	int *dia, *mes, *ano;
 	dia = (int *)malloc(t_e * sizeof(int));
 	mes = (int *)malloc(t_e * sizeof(int));
 	ano = (int *)malloc(t_e * sizeof(int));
-	
+	//---------------------------------------------------
 	//---Alocação das variáveis principais---
 	qtd_pessoas = (int *)malloc(t_e * sizeof(int));
-    
     nome_pessoas = (char**)malloc(t_e * sizeof(char*));
-    
     nome_evento = (char**)malloc(t_e * sizeof(char *));
-	dataAtual();
+    //---------------------------------------------------
+	data = dataAtual();
+	printf("%d\n",data);
 	do
 	{
 		sair = opcao();
@@ -47,13 +49,6 @@ int main(int argc, char *argv[])
 		}
 	}while(sair!=4);
 	
-	/*
-	int i;
-	for(i=0;i<t_e;i++)
-	{
-		printf("Evento - %d: %s\n",i+1,nome_evento[i]);
-		printf("Quantidade de pessoas: %d\n",qtd_pessoas[i]);
-	}*/
 	return 0;
 }
 
@@ -109,8 +104,11 @@ void exibir_eventos(char **nome,int *qtd, int t)
 	}
 }
 
-void dataAtual()
+int dataAtual()
 {
+	int data_num;
+	int data_num_invert;
+	char data_char[20];
 	time_t data_hora_segundos;
 	struct tm *timeinfo;
 	time(&data_hora_segundos);
@@ -119,6 +117,72 @@ void dataAtual()
 	strftime(data_hoje,80,"%d/%m/%Y",timeinfo);
 	strtok(data_hoje,"\n");
 	printf("Data: %s\n",data_hoje);
+	data_num = extrairNumero(data_hoje);
+	sprintf(data_char,"%d",data_num);
+	
+	return inverteData(data_char);
+}
+
+int extrairNumero(char *valor)
+{
+	int num = 0;
+	int i;
+	
+	for(i=0; valor[i] != '\0';i++)
+	{
+		if(isdigit(valor[i]))
+		{
+			num += (int)(valor[i])-'0';
+			num *=10;
+		}
+	}
+	num /= 10;
+}
+
+int inverteData(char *num1)
+{
+	int j, r=0;
+	char num2[20];
+	
+	//sprintf(num1,"%d",data);
+	
+	for(j=0;j<8;j++)
+	{
+		if(j==0)
+		{
+			num2[j] = num1[4];
+		}
+		else if(j==1)
+		{
+			num2[j] = num1[5];
+		}
+		else if(j==2)
+		{
+			num2[j] = num1[6];
+		}
+		else if(j==3)
+		{
+			num2[j] = num1[7];
+		}
+		else if(j==4)
+		{
+			num2[j] = num1[2];
+		}
+		else if(j==5)
+		{
+			num2[j] = num1[3];
+		}
+		else if(j==6)
+		{
+			num2[j] = num1[0];
+		}
+		else if(j==7)
+		{
+			num2[j] = num1[1];
+		}
+	}
+	
+	return extrairNumero(num2);
 }
 
 
