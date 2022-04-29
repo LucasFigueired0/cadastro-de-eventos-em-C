@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 int opcao();
-void cadastroEvento(char **nome, int *qtd_pessoas, int t);
+//, int t, int *dia, int *mes, int *ano, int data_atual
+void cadastroEvento(char **nome, int *qtd_pessoas,int t);
 void exibir_eventos(char **nome,int *qtd, int t);
+void dataAtual();
 
 int main(int argc, char *argv[]) 
 {
@@ -13,13 +16,19 @@ int main(int argc, char *argv[])
 	char **nome_evento;
 	char **nome_pessoas;
 	
+	//variáveis de data
+	int *dia, *mes, *ano;
+	dia = (int *)malloc(t_e * sizeof(int));
+	mes = (int *)malloc(t_e * sizeof(int));
+	ano = (int *)malloc(t_e * sizeof(int));
+	
 	//---Alocação das variáveis principais---
 	qtd_pessoas = (int *)malloc(t_e * sizeof(int));
     
     nome_pessoas = (char**)malloc(t_e * sizeof(char*));
     
     nome_evento = (char**)malloc(t_e * sizeof(char *));
-	
+	dataAtual();
 	do
 	{
 		sair = opcao();
@@ -98,6 +107,18 @@ void exibir_eventos(char **nome,int *qtd, int t)
 	{
 		printf("------------------------------------------\n");
 	}
+}
+
+void dataAtual()
+{
+	time_t data_hora_segundos;
+	struct tm *timeinfo;
+	time(&data_hora_segundos);
+	timeinfo = localtime(&data_hora_segundos);
+	char data_hoje[80];
+	strftime(data_hoje,80,"%d/%m/%Y",timeinfo);
+	strtok(data_hoje,"\n");
+	printf("Data: %s\n",data_hoje);
 }
 
 
