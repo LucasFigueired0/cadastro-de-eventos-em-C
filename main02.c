@@ -11,7 +11,7 @@ int extrairNumero(char *valor);
 int inverteData(char *num1);
 void cadastroPessoas(char ***nome, char **nome_evento, int *idade, int t);
 
-int main(int argc, char *argv[]) 
+int main02(int argc, char *argv[]) 
 {
 	int sair = 0, t_e = 0, t_p=0;
 	int *qtd_pessoas;
@@ -70,7 +70,7 @@ int opcao()
 {
     int escolha;
     printf("Escolha uma opcao:\n");
-    printf("1 - cadastrar evento;\n");
+    printf("1 - cadastrar evento sdfsdf;\n");
     printf("2 - Participar de um evento;\n");
     printf("3 - Exibir eventos cadastrados;\n");
     printf("4 - sair;\n");
