@@ -4,9 +4,8 @@
 #include <time.h>
 
 int opcao();
-//, int t, int *dia, int *mes, int *ano, int data_atual
-void cadastroEvento(char **nome, int *qtd_pessoas,int t);
-void exibir_eventos(char **nome,int *qtd, int t);
+void cadastroEvento(char **nome, int *qtd_pessoas,int t, int *dia, int *mes, int *ano, int data_atual);
+void exibir_eventos(char **nome,int *qtd, int t, int *dia, int *mes, int *ano);
 int dataAtual();
 int extrairNumero(char *valor);
 int inverteData(char *num1);
@@ -19,7 +18,7 @@ int main(int argc, char *argv[])
 	char **nome_pessoas;
 	int data;
 	//variáveis de data
-	int *dia, *mes, *ano;
+	int *dia, *mes, *ano, *data_evento;
 	dia = (int *)malloc(t_e * sizeof(int));
 	mes = (int *)malloc(t_e * sizeof(int));
 	ano = (int *)malloc(t_e * sizeof(int));
@@ -37,15 +36,18 @@ int main(int argc, char *argv[])
 		//--Cadastrar eventos
 		if(sair == 1)
 		{
-			cadastroEvento(nome_evento,qtd_pessoas,t_e);
+			cadastroEvento(nome_evento,qtd_pessoas,t_e,dia,mes,ano,data);
 			t_e++;
 			nome_evento = (char**) realloc(nome_evento, (t_e+1)*sizeof(char*));
             qtd_pessoas = (int*) realloc(qtd_pessoas,(t_e+1)*sizeof(int));
+            dia = (int*) realloc(dia,(t_e+1)*sizeof(int));
+            mes = (int*) realloc(mes,(t_e+1)*sizeof(int));
+            ano = (int*) realloc(ano,(t_e+1)*sizeof(int));
 		}
 		//--Exibir eventos cadastrados
 		else if(sair == 3)
 		{
-			exibir_eventos(nome_evento,qtd_pessoas,t_e);
+			exibir_eventos(nome_evento,qtd_pessoas,t_e,dia,mes,ano);
 		}
 	}while(sair!=4);
 	
@@ -53,8 +55,9 @@ int main(int argc, char *argv[])
 }
 
 //---Função para cadastro de eventos
-void cadastroEvento(char **nome, int *qtd_pessoas, int t)
+void cadastroEvento(char **nome, int *qtd_pessoas,int t, int *dia, int *mes, int *ano, int data_atual)
 {
+	int data, dia_, mes_, ano_;
 	char nome01[80];
 	int qtd=0;
 	//--Entrada do nome do evento--
@@ -68,6 +71,31 @@ void cadastroEvento(char **nome, int *qtd_pessoas, int t)
 	printf("Quantidade de pessoas: ");
 	scanf("%d",&qtd);
 	qtd_pessoas[t] = qtd;
+	getchar();
+	//Entrada dos valores de data
+	while(data_atual >= data)
+	{
+		printf("Data do evento:\n");
+		printf("Dia: ");
+		scanf("%d",&dia_);
+		printf("Mes: ");
+		scanf("%d",&mes_);
+		printf("Ano: ");
+		scanf("%d",&ano_);
+		data = (ano_*100 + mes_) * 100+dia_;
+		if(data_atual >= data)
+		{
+			printf("\nData invalida!\n");
+		}
+		else
+		{
+			break;
+		}
+	}
+	dia[t] = dia_;
+	mes[t] = mes_;
+	ano[t] = ano_;
+	getchar();
 }
 
 //---Função para exibir tela inicial de opções---
@@ -85,7 +113,7 @@ int opcao()
 }
 
 //---Exibir eventos cadastrados---
-void exibir_eventos(char **nome,int *qtd, int t)
+void exibir_eventos(char **nome,int *qtd, int t, int *dia, int *mes, int *ano)
 {
 	int i;
 	for(i=0;i<t;i++)
@@ -93,6 +121,23 @@ void exibir_eventos(char **nome,int *qtd, int t)
 		printf("------------------------------------------\n");
 		printf("Evento - %d: %s\n",i+1,nome[i]);
 		printf("Quantidade de pessoas: %d\n",qtd[i]);
+		if(dia[i] < 10 && mes[i] < 10)
+		{
+			printf("Data do evento 0%d/0%d/%d\n",dia[i],mes[i],ano[i]);
+		}
+		else if(dia[i] < 10 && mes[i]>=10)
+		{
+				printf("Data do evento 0%d/%d/%d\n",dia[i],mes[i],ano[i]);
+		}
+		else if(dia[i] > 10 && mes[i]<=10)
+		{
+				printf("Data do evento %d/0%d/%d\n",dia[i],mes[i],ano[i]);
+		}
+		else
+		{
+			printf("Data do evento %d/%d/%d\n",dia[i],mes[i],ano[i]);	
+		}
+		
 		if(t==1)
 		{
 			printf("------------------------------------------\n");
@@ -136,15 +181,13 @@ int extrairNumero(char *valor)
 			num *=10;
 		}
 	}
-	num /= 10;
+	return num /= 10;
 }
 
 int inverteData(char *num1)
 {
 	int j, r=0;
 	char num2[20];
-	
-	//sprintf(num1,"%d",data);
 	
 	for(j=0;j<8;j++)
 	{
