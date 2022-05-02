@@ -2,6 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
+#include <windows.h>
+
+void cls(void)
+{
+    COORD coordScreen = {0, 0};
+    DWORD cCharsWritten;
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    DWORD dwConSize;
+    HANDLE hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
+     GetConsoleScreenBufferInfo(hConsole, &csbi);
+    dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+ 
+    FillConsoleOutputCharacter(hConsole, TEXT(' '),
+                   dwConSize, coordScreen, &cCharsWritten);
+ 
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+ 
+    FillConsoleOutputAttribute(hConsole, csbi.wAttributes,
+                               dwConSize, coordScreen, &cCharsWritten);
+   
+    SetConsoleCursorPosition(hConsole, coordScreen);
+}
 
 int opcao();
 void cadastroEvento(char **nome, int *qtd_pessoas,int t, int *dia, int *mes, int *ano, int data_atual);
@@ -9,17 +32,18 @@ void exibir_eventos(char **nome,int *qtd, int t, int *dia, int *mes, int *ano);
 int dataAtual();
 int extrairNumero(char *valor);
 int inverteData(char *num1);
-void cadastroPessoas(char ***nome, char **nome_evento, int *idade, int t);
+
+void cadastroPessoas(char **nome, char **nome_evento, int *idade, int t, int tP);
 
 int main(int argc, char *argv[]) 
 {
 	int sair = 0, t_e = 0, t_p=0;
 	int *qtd_pessoas;
 	char **nome_evento;
-	char ***nome_pessoas;
+	char **nome_pessoas;
 	int *idade;
 	int data;
-	//variáveis de data
+	//Alocação das variáveis de data
 	int *dia, *mes, *ano, *data_evento;
 	dia = (int *)malloc(t_e * sizeof(int));
 	mes = (int *)malloc(t_e * sizeof(int));
@@ -27,7 +51,7 @@ int main(int argc, char *argv[])
 	//---------------------------------------------------
 	//---Alocação das variáveis principais---
 	qtd_pessoas = (int *)malloc(t_e * sizeof(int));
-    nome_pessoas = (char***)malloc(t_e * sizeof(char**));
+    nome_pessoas = (char**)malloc(t_e * sizeof(char*));
     nome_evento = (char**)malloc(t_e * sizeof(char *));
     idade = (int *)malloc(t_e * sizeof(int));
     //---------------------------------------------------
@@ -36,9 +60,10 @@ int main(int argc, char *argv[])
 	do
 	{
 		sair = opcao();
-		//--Cadastrar eventos
+		
 		switch(sair)
 		{
+			//--1 - Cadastrar eventos
 			case 1:
 				cadastroEvento(nome_evento,qtd_pessoas,t_e,dia,mes,ano,data);
 				t_e++;
@@ -48,13 +73,16 @@ int main(int argc, char *argv[])
             	mes = (int*) realloc(mes,(t_e+1)*sizeof(int));
             	ano = (int*) realloc(ano,(t_e+1)*sizeof(int));
             	break;
-           //--Cadastrar pessoas nos eventos
+           //--2 - Cadastrar pessoas nos eventos
 		    case 2:
-            	printf("Opcao indisponivel!\n");
+            	cadastroPessoas(nome_pessoas, nome_evento, idade, t_e, t_p);
+            	t_p++;
             	break;
+           //--3 - Exibir eventos cadastrados
             case 3:
             	exibir_eventos(nome_evento,qtd_pessoas,t_e,dia,mes,ano);
             	break;
+           //--4 - Sair
             case 4:
 				break;	
 			default:
@@ -68,12 +96,15 @@ int main(int argc, char *argv[])
 //--- [0] - Função para exibir tela inicial de opções---
 int opcao()
 {
-    int escolha;
-    printf("Escolha uma opcao:\n");
+    cls();
+	int escolha;
+    printf("========================================\n");
+	printf("Escolha uma opcao:\n");
     printf("1 - cadastrar evento;\n");
     printf("2 - Participar de um evento;\n");
     printf("3 - Exibir eventos cadastrados;\n");
     printf("4 - sair;\n");
+    printf("========================================\n");
     scanf("%d",&escolha);
     getchar();
     return escolha;
@@ -82,7 +113,8 @@ int opcao()
 //---[1] - Função para cadastro de eventos
 void cadastroEvento(char **nome, int *qtd_pessoas,int t, int *dia, int *mes, int *ano, int data_atual)
 {
-	int data, dia_, mes_, ano_;
+	cls();
+	int data, dia_, mes_, ano_, n=1;
 	char nome01[80];
 	int qtd=0;
 	//--Entrada do nome do evento--
@@ -96,7 +128,7 @@ void cadastroEvento(char **nome, int *qtd_pessoas,int t, int *dia, int *mes, int
 	printf("Quantidade de pessoas: ");
 	scanf("%d",&qtd);
 	qtd_pessoas[t] = qtd;
-	getchar();
+	//getchar();
 	//Entrada dos valores de data
 	while(data_atual >= data)
 	{
@@ -124,12 +156,15 @@ void cadastroEvento(char **nome, int *qtd_pessoas,int t, int *dia, int *mes, int
 	printf("------------------------------------------\n");
 	printf("------EVENTO CADASTRADO COM SUCESSO!------\n");
 	printf("------------------------------------------\n");
-	getchar();
+	printf("\nDigite 0 para voltar ao menu anterior -> ");
+	while(n!=0) scanf("%d",&n);
+	//getchar();
 }
 
 //--- [3] - Exibir eventos cadastrados---
 void exibir_eventos(char **nome,int *qtd, int t, int *dia, int *mes, int *ano)
 {
+	cls();
 	int i;
 	for(i=0;i<t;i++)
 	{
@@ -162,8 +197,13 @@ void exibir_eventos(char **nome,int *qtd, int t, int *dia, int *mes, int *ano)
 	{
 		printf("------------------------------------------\n");
 	}
+	int n=1;
+	printf("Digite 0 para voltar ao menu anterior -> ");
+	while(n!=0) scanf("%d",&n);
+	
 }
 
+//Fução para exibir a hora atual
 int dataAtual()
 {
 	int data_num;
@@ -183,6 +223,7 @@ int dataAtual()
 	return inverteData(data_char);
 }
 
+//Função para obter os caracteres numericos da função dataAtual
 int extrairNumero(char *valor)
 {
 	int num = 0;
@@ -241,6 +282,24 @@ int inverteData(char *num1)
 	}
 	
 	return extrairNumero(num2);
+}
+
+void cadastroPessoas(char **nome, char **nome_evento, int *idade, int t, int tP)
+{
+	int i;
+	
+	if(t<=0)
+	{
+		printf("\nNenhum evento cadastrado!\n\n");
+	}
+	else
+	{
+		printf("Escolha qual evento deseja participar\n digite o numero do evento:\n\n");
+		for(i=0;i<t;i++)
+		{
+			printf("%d - %s\n",i+1,nome_evento[i]);
+		}
+	}	
 }
 
 
