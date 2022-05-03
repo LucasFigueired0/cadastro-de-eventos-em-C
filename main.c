@@ -33,7 +33,7 @@ int dataAtual();
 int extrairNumero(char *valor);
 int inverteData(char *num1);
 
-void cadastroPessoas(char **nome, char **nome_evento, int *idade, int t, int tP);
+int cadastroPessoas(char **nome, char **nome_evento, int *idade, int t, int tP,int *id);
 
 int main(int argc, char *argv[]) 
 {
@@ -43,6 +43,11 @@ int main(int argc, char *argv[])
 	char **nome_pessoas;
 	int *idade;
 	int data;
+	int aux=0;
+	//-------------------
+	int *id_evento;
+	id_evento = (int *)malloc(t_p * sizeof(int));
+	//------------------
 	//Alocação das variáveis de data
 	int *dia, *mes, *ano, *data_evento;
 	dia = (int *)malloc(t_e * sizeof(int));
@@ -75,8 +80,18 @@ int main(int argc, char *argv[])
             	break;
            //--2 - Cadastrar pessoas nos eventos
 		    case 2:
-            	cadastroPessoas(nome_pessoas, nome_evento, idade, t_e, t_p);
-            	t_p++;
+            	aux = cadastroPessoas(nome_pessoas, nome_evento, idade, t_e, t_p, id_evento);
+            	if(aux <= 0)
+            	{
+            		break;
+				}
+				else
+				{
+					t_p++;
+            		nome_pessoas = (char**) realloc(nome_pessoas,(t_p+1)*sizeof(char*));
+            		idade = (int*) realloc(idade,(t_p+1)*sizeof(int));
+            		id_evento = (int*)realloc(id_evento,(t_p+1)*sizeof(int));
+				}
             	break;
            //--3 - Exibir eventos cadastrados
             case 3:
@@ -90,6 +105,13 @@ int main(int argc, char *argv[])
 		}
 		
 	}while(sair!=4);
+	
+	//Teste com a variável "nome_pessoas"
+	int i;
+	for(i=0;i<t_p;i++)
+	{
+		printf("%s\n",nome_pessoas[i]);
+	}
 	
 	return 0;
 }
@@ -284,22 +306,48 @@ int inverteData(char *num1)
 	return extrairNumero(num2);
 }
 
-void cadastroPessoas(char **nome, char **nome_evento, int *idade, int t, int tP)
+int cadastroPessoas(char **nome, char **nome_evento, int *idade, int t, int tP, int *id)
 {
-	int i;
+	cls();
+	int opcao=-1, aux = 0,i,j;
+	char auxNome[50];
 	
-	if(t<=0)
+	
+	do
 	{
-		printf("\nNenhum evento cadastrado!\n\n");
-	}
-	else
-	{
-		printf("Escolha qual evento deseja participar\n digite o numero do evento:\n\n");
+		opcao == 0;
+		printf("---Escolha o numero do evento--\n");
 		for(i=0;i<t;i++)
 		{
 			printf("%d - %s\n",i+1,nome_evento[i]);
 		}
-	}	
+		scanf("%d",&opcao);
+		if(opcao<=0 || opcao > t)
+		{
+			printf("\nAlternativa invalida!!!\n");
+		}
+		else
+		{
+			id[tP] = opcao - 1;
+			aux += 1;
+			break;
+		}
+	}while(opcao<=0 || opcao > t);
+	
+	printf("Digite seu nome: ");
+	
+	printf("------------------------------------------\n");
+	printf("------CADASTRO EFETUADO COM SUCESSO!------\n");
+	printf("------------------------------------------\n");
+	
+	printf("--------------\n");
+	printf("id => %d\n",id[tP]);
+	printf("aux => %d\n",aux);
+	printf("--------------\n");
+	int n = 1;
+	printf("\nDigite 0 para voltar ao menu anterior -> ");
+	while(n!=0) scanf("%d",&n);
+	return aux;
 }
 
 
